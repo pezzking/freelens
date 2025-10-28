@@ -298,7 +298,7 @@ jobs:
             --${{ matrix.arch }}
 
       - name: Azure Trusted Signing (Windows)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && vars.AZURE_CODE_SIGNING_NAME != ''
         uses: azure/trusted-signing-action@v0.5.9
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
