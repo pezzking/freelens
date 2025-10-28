@@ -22,3 +22,4 @@ icon.iconset/
 .DS_Store
 .idea/
 .vscode/
+rebuild-and-start.sh
