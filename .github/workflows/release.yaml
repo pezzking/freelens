@@ -413,6 +413,9 @@ jobs:
   publish-npm-release:
     name: publish NPM release
 
+    # Only run on official freelensapp repository, not forks
+    if: github.repository == 'freelensapp/freelens'
+
     needs:
       - make-draft-release
       - build-app
@@ -515,6 +518,9 @@ jobs:
 
   release-apt-repository:
     name: Release APT repository
+
+    # Only run on official freelensapp repository, not forks
+    if: github.repository == 'freelensapp/freelens'
 
     needs:
       - make-draft-release
