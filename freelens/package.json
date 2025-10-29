@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "pnpm dlx rimraf@6.0.1 binaries dist static/build",
     "clean:node_modules": "pnpm dlx rimraf@6.0.1 node_modules",
-    "build": "NODE_ENV=production webpack --config webpack/webpack.ts --progress",
+    "build": "webpack --config webpack/webpack.ts --progress",
     "postbuild": "pnpm build:resources",
     "build:resources": "pnpm \"/^build:resources:/\"",
     "build:resources:client": "ensure-binaries --package package.json --base-dir binaries/client",
@@ -47,7 +47,7 @@
     "start:linux:x64": "./dist/linux-unpacked/freelens",
     "start:linux:x86_64": "./dist/linux-unpacked/freelens",
     "start:win32": "dist\\win-unpacked\\Freelens.exe",
-    "dev": "concurrently -i -k \"pnpm dev:run -C\" npm:dev:build",
+    "dev": "concurrently -i -k \"pnpm dev:run\" npm:dev:build",
     "dev:run": "nodemon --watch ./static/build/main.js --exec \"electron --remote-debugging-port=9223 --inspect .\"",
     "dev:build": "pnpm \"/^dev:build:/\"",
     "postdev:build": "pnpm build:resources",

@@ -1,7 +1,7 @@
 # Freelens Makefile
 # Simple commands to build and run Freelens
 
-.PHONY: help setup clean build build-app rebuild start dev kill install
+.PHONY: help setup clean build build-dev build-app rebuild rebuild-dev start dev fresh-dev kill install
 
 # Default target
 .DEFAULT_GOAL := help
@@ -39,6 +39,11 @@ build: ## Build all packages (production)
 	@. ${HOME}/.nvm/nvm.sh && nvm use && NODE_ENV=production pnpm build
 	@echo "$(GREEN)✓ Build complete$(NC)"
 
+build-dev: ## Build all packages (development)
+	@echo "$(CYAN)🏗️  Building all packages (dev mode)...$(NC)"
+	@. ${HOME}/.nvm/nvm.sh && nvm use && pnpm build:dev
+	@echo "$(GREEN)✓ Development build complete$(NC)"
+
 build-app: ## Build the Electron app bundle
 	@echo "$(CYAN)📱 Building Electron app bundle...$(NC)"
 	@cd freelens && . ${HOME}/.nvm/nvm.sh && nvm use && NODE_ENV=production pnpm build:app dir
@@ -47,12 +52,21 @@ build-app: ## Build the Electron app bundle
 rebuild: clean build build-app ## Clean, build packages, and build app bundle
 	@echo "$(GREEN)✓ Rebuild complete$(NC)"
 
+rebuild-dev: clean build-dev ## Clean and build packages in development mode
+	@echo "$(GREEN)✓ Development rebuild complete$(NC)"
+
 start: ## Start Freelens (requires prior build)
 	@echo "$(CYAN)🚀 Starting Freelens...$(NC)"
 	@cd freelens && . ${HOME}/.nvm/nvm.sh && nvm use && pnpm start
 
 dev: ## Run in development mode with hot-reloading
 	@echo "$(CYAN)💻 Starting development mode...$(NC)"
+	@echo "$(YELLOW)Note: Electron will start after initial webpack build completes$(NC)"
+	@. ${HOME}/.nvm/nvm.sh && nvm use && pnpm dev
+
+fresh-dev: kill ## Kill processes and start fresh development mode
+	@echo "$(CYAN)💻 Starting fresh development mode...$(NC)"
+	@sleep 2
 	@. ${HOME}/.nvm/nvm.sh && nvm use && pnpm dev
 
 kill: ## Kill all running Freelens processes
