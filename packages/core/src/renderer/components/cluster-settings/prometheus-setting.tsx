@@ -43,6 +43,8 @@ class NonInjectedClusterPrometheusSetting extends React.Component<ClusterPrometh
   @observable path = ""; // <namespace>/<service>:<port>
   @observable customPrefix = ""; // e.g. "/prometheus"
   @observable useHttps = false; // whether to use https scheme for service proxy
+  @observable directUrl = ""; // direct URL to Prometheus (bypasses K8s service proxy)
+  @observable bearerToken = ""; // bearer token for Prometheus authentication
   @observable selectedOption: ProviderValue = autoDetectPrometheus;
   @observable loading = true;
   readonly initialFilesystemMountpoints = initialFilesystemMountpoints;
@@ -76,6 +78,10 @@ class NonInjectedClusterPrometheusSetting extends React.Component<ClusterPrometh
     return this.loadedOptions.get(this.selectedOption)?.isConfigurable ?? false;
   }
 
+  @computed get isOpenShift(): boolean {
+    return this.selectedOption === "openshift";
+  }
+
   componentDidMount() {
     disposeOnUnmount(
       this,
@@ -88,10 +94,14 @@ class NonInjectedClusterPrometheusSetting extends React.Component<ClusterPrometh
           this.path = `${prometheus.namespace}/${prometheus.service}:${prometheus.port}`;
           this.customPrefix = prefix;
           this.useHttps = Boolean(prometheus.https);
+          this.directUrl = prometheus.directUrl || "";
+          this.bearerToken = prometheus.bearerToken || "";
         } else {
           this.path = "";
           this.customPrefix = "";
           this.useHttps = false;
+          this.directUrl = "";
+          this.bearerToken = "";
         }
 
         if (prometheusProvider) {
@@ -135,6 +145,8 @@ class NonInjectedClusterPrometheusSetting extends React.Component<ClusterPrometh
       port: parseInt(parsed[2]),
       prefix: this.sanitizePrefix(this.customPrefix),
       https: this.useHttps,
+      directUrl: this.directUrl || undefined,
+      bearerToken: this.bearerToken || undefined,
     };
   };
 
@@ -220,6 +232,41 @@ class NonInjectedClusterPrometheusSetting extends React.Component<ClusterPrometh
                 to be added to all requests.
               </small>
             </section>
+            {this.isOpenShift && (
+              <>
+                <hr />
+                <section>
+                  <SubTitle title="Direct Prometheus URL" />
+                  <Input
+                    theme="round-black"
+                    value={this.directUrl}
+                    onChange={(value) => (this.directUrl = value)}
+                    onBlur={this.onSaveAll}
+                    placeholder="https://prometheus-k8s-openshift-monitoring.apps.example.com"
+                  />
+                  <small className="hint">
+                    Direct URL to Prometheus, bypassing the Kubernetes service proxy. Use the OpenShift route URL
+                    or a port-forwarded address.
+                  </small>
+                </section>
+                <hr />
+                <section>
+                  <SubTitle title="Bearer Token" />
+                  <Input
+                    theme="round-black"
+                    type="password"
+                    value={this.bearerToken}
+                    onChange={(value) => (this.bearerToken = value)}
+                    onBlur={this.onSaveAll}
+                    placeholder="eyJhbGciOi..."
+                  />
+                  <small className="hint">
+                    Service account bearer token for authenticating to Prometheus. Generate with: oc create token
+                    &lt;service-account&gt; -n openshift-monitoring
+                  </small>
+                </section>
+              </>
+            )}
           </>
         )}
         <>
