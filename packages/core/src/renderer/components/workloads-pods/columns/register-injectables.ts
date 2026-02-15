@@ -12,6 +12,7 @@ import { podsUsedCpuColumnInjectable } from "./pods-cpu-usage-column.injectable"
 import { podsipColumnInjectable } from "./pods-ip-column.injectable";
 import { podsLogsButtonColumnInjectable } from "./pods-logs-button-column.injectable";
 import { podsUsedMemoryColumnInjectable } from "./pods-memory-usage-column.injectable";
+import { podsShellButtonColumnInjectable } from "./pods-shell-button-column.injectable";
 import { podsNameColumnInjectable } from "./pods-name-column.injectable";
 import { podsNamespaceColumnInjectable } from "./pods-namespace-column.injectable";
 import { podsNodeColumnInjectable } from "./pods-node-column.injectable";
@@ -85,6 +86,11 @@ export function registerInjectables(di: DiContainerForInjection): void {
   }
   try {
     di.register(podsipColumnInjectable);
+  } catch (e) {
+    /* Ignore duplicate registration */
+  }
+  try {
+    di.register(podsShellButtonColumnInjectable);
   } catch (e) {
     /* Ignore duplicate registration */
   }
